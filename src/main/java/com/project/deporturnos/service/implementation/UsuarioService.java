@@ -10,13 +10,16 @@ import com.project.deporturnos.service.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class UsuarioService implements IUsuarioService {
+public class UsuarioService implements IUsuarioService, UserDetailsService {
 
     @Autowired
     private IUsuarioRepository usuarioRepository;
@@ -35,38 +38,38 @@ public class UsuarioService implements IUsuarioService {
 
 
     @Override
-    public void delete(Long id){
+    public void delete(Long id) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
-        if(usuarioOptional.isPresent()){
+        if (usuarioOptional.isPresent()) {
             usuarioRepository.deleteById(id);
-        }else{
-            throw new ResourceNotFoundException("No existe el usuario con el id "+id);
+        } else {
+            throw new ResourceNotFoundException("No existe el usuario con el id " + id);
         }
     }
 
 
     @Override
-    public UsuarioDTO update(Long id, UsuarioRequestUpdateDTO usuarioRequestUpdateDTO){
+    public UsuarioDTO update(Long id, UsuarioRequestUpdateDTO usuarioRequestUpdateDTO) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
-        if(usuarioOptional.isEmpty()){
-            throw new ResourceNotFoundException("No existe el usuario con el id "+id);
+        if (usuarioOptional.isEmpty()) {
+            throw new ResourceNotFoundException("No existe el usuario con el id " + id);
         }
 
         Usuario usuario = usuarioOptional.get();
 
-        if(usuarioRequestUpdateDTO.getNombre() != null){
+        if (usuarioRequestUpdateDTO.getNombre() != null) {
             usuario.setNombre(usuarioRequestUpdateDTO.getNombre());
         }
 
-        if(usuarioRequestUpdateDTO.getEmail() != null){
+        if (usuarioRequestUpdateDTO.getEmail() != null) {
             usuario.setEmail(usuarioRequestUpdateDTO.getEmail());
         }
 
-        if(usuarioRequestUpdateDTO.getPassword() != null){
+        if (usuarioRequestUpdateDTO.getPassword() != null) {
             usuario.setPassword(passwordEncoder.encode(usuarioRequestUpdateDTO.getPassword()));
         }
 
-        if(usuarioRequestUpdateDTO.getTelefono() != null){
+        if (usuarioRequestUpdateDTO.getTelefono() != null) {
             usuario.setTelefono(usuarioRequestUpdateDTO.getTelefono());
         }
 
@@ -74,6 +77,15 @@ public class UsuarioService implements IUsuarioService {
         return mapper.convertValue(usuarioGuardado, UsuarioDTO.class);
     }
 
-    
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<Usuario> usuario = usuarioRepository.findByEmail(email);
+
+        if (usuario.isPresent()) {
+            return usuario.get();
+        }
+
+        throw new UsernameNotFoundException("User Not Found");
+    }
 }
