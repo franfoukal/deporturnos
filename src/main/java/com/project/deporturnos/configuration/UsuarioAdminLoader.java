@@ -22,7 +22,7 @@ public class UsuarioAdminLoader implements ApplicationRunner {
         Usuario usuario = Usuario.builder()
                 .nombre("FirstAdmin")
                 .email("firstAdmin@gmail.com")
-                .password(passwordEncoder.encode("adminpassword123/*"))
+                .password(passwordEncoder.encode("admin"))
                 .rol(Rol.ADMIN)
                 .cuentaActivada(true)
                 .build();
