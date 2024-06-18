@@ -2,6 +2,7 @@ package com.project.deporturnos.controller;
 
 import com.project.deporturnos.entity.dto.ReservaDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,5 +29,15 @@ public class ReservaController {
     }
 
 
+    @GetMapping(path = "/prueba")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<String> getPrueba() {
+        return ResponseEntity.ok("authenticado");
+    }
 
+    @GetMapping(path = "/prueba_todos")
+    @PreAuthorize("hasRole('ROLE_CLIENTE') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> getPruebaTodos() {
+        return ResponseEntity.ok("authenticado");
+    }
 }
