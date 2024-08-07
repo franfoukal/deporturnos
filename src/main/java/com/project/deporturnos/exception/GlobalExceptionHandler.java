@@ -3,6 +3,7 @@ package com.project.deporturnos.exception;
 import com.project.deporturnos.entity.dto.GeneralResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseBody
+    public ResponseEntity<String> handleAccessDeniedException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseBody
     public ResponseEntity<String> handleUnauthorizedException(Exception ex) {
@@ -52,6 +59,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     @ResponseBody
     public ResponseEntity<String> handleAuthenticationException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 }
